@@ -19,7 +19,7 @@ public class Speedup : MonoBehaviour
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
-        UnityEngine.Debug.Log($"SPEEDUP - Current collision tag: {collision.gameObject.tag}");
+        //UnityEngine.Debug.Log($"SPEEDUP - Current collision tag: {collision.gameObject.tag}");
         if (IsCollisionWithCar(collision)) HandleCollisionWithCar();
     }
     bool IsCollisionWithCar(Collision2D collision)

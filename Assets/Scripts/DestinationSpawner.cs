@@ -1,35 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using UnityEngine;
 
-
-public class PackageSpawner : MonoBehaviour
+public class DestinationSpawner : MonoBehaviour
 {
-    public GameObject greenSquarePrefab;
+    public GameObject destinationPrefab;
     public Transform[] spawnPoints;
     private System.Random random = new System.Random();
     private List<Transform> randomSpawnPoints = new List<Transform>();
     private int maxSpawnPointCount = 5;
     void Start()
     {
-        GetRandomPoints();
-        SpawnGreenSquares();
+        SpawnDestinations();
     }
 
-    void SpawnGreenSquares()
+    void SpawnDestinations()
     {
+        GetRandomPoints();
         foreach (Transform spawnPoint in randomSpawnPoints)
         {
-            Instantiate(greenSquarePrefab, spawnPoint.position, Quaternion.identity);
+            Instantiate(destinationPrefab, spawnPoint.position, Quaternion.identity);
+
         }
     }
     private void GetRandomPoints()
     {
         ShuffleTransformPoints();
-        randomSpawnPoints = spawnPoints.Take(maxSpawnPointCount).ToList();
+        for (int count = 1; count <= maxSpawnPointCount; count++)
+        {
+            // Add the element to the selected elements list
+            randomSpawnPoints.Add(spawnPoints[count]);
 
+        }
     }
     private void ShuffleTransformPoints()
     {

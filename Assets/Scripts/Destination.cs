@@ -1,81 +1,95 @@
-using Assets.Scripts;
-using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using Utils;
-
 
 public class Destination : MonoBehaviour
 {
-
-    [SerializeField] GameObject packagesCollected;
-    [SerializeField] GameObject victoryCanvas;
-    [SerializeField] GameObject destinationsRemaining;
-    [SerializeField] TextMeshProUGUI packagesDeliveredTxt;
-    [SerializeField] TextMeshProUGUI destinationsRemainingTxt;
-    [SerializeField] string rawPackagesDeliveredTxt;
-    [SerializeField] string rawDestinationsRemaining;
-
+    public GameObject victoryScreen;
+    private GameObject packageCollectedCount;
+    private GameObject packageDeliveredCount;
+    private GameObject TimeElapsed;
+    private GameObject TotalTime;
+    
     void Start()
     {
-        ReloadCanvasItems();
+        FindGameObjects();
     }
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Package retrieved!");
-        UpdatePoints();
+        UnityEngine.Debug.Log($"DESTINATION - Current collision tag: {collision.gameObject.tag}");
+        if (IsCollisionWithCar(collision)) HandleCollisionWithCar();
     }
-    void UpdatePoints()
+    bool IsCollisionWithCar(Collision2D collision)
     {
-        packagesDeliveredTxt = packagesCollected.GetComponent<TextMeshProUGUI>();
-        destinationsRemainingTxt = destinationsRemaining.GetComponent<TextMeshProUGUI>();   
-        rawPackagesDeliveredTxt = packagesDeliveredTxt.text;
-        rawDestinationsRemaining = destinationsRemainingTxt.text;
-        
-        if (rawPackagesDeliveredTxt.Equals("0"))
+        if (collision.gameObject.tag.Equals("Player"))
+            return true;
+        return false;
+    }
+    void HandleCollisionWithCar()
+    {
+        if (IsPackageCollectedCountEqualsZero()) return;
+        this.gameObject.SetActive(false);
+        DecrementPackageCollectedCount();
+        DecrementPackageDeliveredCount();
+        if (IsNoPackageLeft())
         {
-            HandleNoPackagesCollected();
+            ShowVictoryScreen();
             return;
         }
-        HandlePackagesCollected();
-
     }
-    void HandleNoPackagesCollected()
+    void DecrementPackageCollectedCount()
     {
-        this.gameObject.SetActive(true);
+        TextMeshProUGUI countTxt = packageCollectedCount.gameObject.GetComponent<TextMeshProUGUI>();
+        countTxt.text = GetDecrementedCount(countTxt.text);
     }
-    void HandlePackagesCollected()
-    {        
-        string rawDecrementedPoint = StringUtils.DecrementPoints(rawPackagesDeliveredTxt);
-        string rawDecrementedDestinationsRemaining = StringUtils.DecrementPoints(rawDestinationsRemaining);
-        packagesDeliveredTxt.text = rawDecrementedPoint;
-        destinationsRemainingTxt.text = rawDecrementedDestinationsRemaining;
-        if (GetRemainingDestinations() == 0)
+    void DecrementPackageDeliveredCount()
+    {
+        TextMeshProUGUI countTxt = packageDeliveredCount.gameObject.GetComponent<TextMeshProUGUI>();
+        countTxt.text = GetDecrementedCount(countTxt.text);
+    }
+    string GetDecrementedCount(string count)
+    {
+        int temp = Int32.Parse(count);
+        temp--;
+        return temp.ToString();
+    }
+    bool IsPackageCollectedCountEqualsZero()
+    {
+        TextMeshProUGUI countTxt = packageCollectedCount.gameObject.GetComponent<TextMeshProUGUI>();
+        if (countTxt.text.Equals("0")) return true;
+        return false;
+    }
+    bool IsNoPackageLeft()
+    {
+        TextMeshProUGUI packageCollectedCountTxt =
+            packageCollectedCount.gameObject.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI packageDeliveredCountTxt =
+            packageDeliveredCount.gameObject.GetComponent<TextMeshProUGUI>();
+        if (packageCollectedCountTxt.text == "0" && packageDeliveredCountTxt.text == "0")
         {
-            CanvasUtils.EnableCanvas(victoryCanvas);
-            Time.timeScale = 0;
+            return true;
         }
-            
-        
-        this.gameObject.SetActive(false);
+        return false;
     }
-    int GetRemainingDestinations()
+    void FindGameObjects()
+    {        
+        packageCollectedCount = GameObject.Find("Packages Collected Count");
+        packageDeliveredCount = GameObject.Find("Packages Delivered Count");
+        TotalTime = GameObject.Find("TotalTime");
+        TimeElapsed = GameObject.Find("Time Elapsed");
+    }
+    void ShowVictoryScreen()
     {
-        GameObject[] destinationsRemaining = GameObject.FindGameObjectsWithTag("Destinations");
-        int count = destinationsRemaining.Length;
-        Debug.Log($"Destinations remaining: {count}");
-        return count-1;
+        Time.timeScale = 0;
+        victoryScreen.gameObject.SetActive(true);
+        UpdateTotalTimeText();
     }
-    void ReloadCanvasItems()
+    void UpdateTotalTimeText()
     {
-        packagesCollected = GameObject.Find("Follow Camera/Canvas/Packages");
-        victoryCanvas = GameObject.Find("Follow Camera/VictoryCanvas");
-        destinationsRemaining = GameObject.Find("Follow Camera/Canvas/DestinationRemaining");
-        CanvasUtils.DisableCanvas(victoryCanvas);
+        TextMeshProUGUI totalTimeTxt = TotalTime.GetComponent<TextMeshProUGUI>();
+        totalTimeTxt.text = TimeElapsed.GetComponent<TextMeshProUGUI>().text!;
     }
-  
 }

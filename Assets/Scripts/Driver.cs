@@ -9,10 +9,10 @@ public class Driver : MonoBehaviour
 {
 
     public AudioSource audioPlayer;
-    public float moveSpeed = 0.03f;
+    public float moveSpeed = 0.005f;
     private float rotationSpeed = 1f;
     private List<string> excludedCollisionTags = new List<string>() {
-        "Bridge","Package","SpeedUp"
+        "Bridge","Package","SpeedUp","Destination"
     };
     public Vector3 startingPosition;
     public SpriteRenderer carSpriteRenderer;
@@ -56,8 +56,8 @@ public class Driver : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         UnityEngine.Debug.Log($"PLAYER - Current collision tag: {collision.gameObject.tag}");
-        if (IsCollisionWithSpeedup(collision)) { HandleSpeedupCollision();  return; };
-        if (IsCollisionWithinExceptions(collision)) return; 
+        if (IsCollisionWithSpeedup(collision)) { HandleSpeedupCollision(); return; };
+        if (IsCollisionWithinExceptions(collision)) return;
         audioPlayer.Play();
         transform.position = startingPosition;
     }
@@ -83,7 +83,7 @@ public class Driver : MonoBehaviour
     }
     void HandleSpeedupCollision()
     {
-        moveSpeed = (float)(moveSpeed + 0.02);
+        moveSpeed = (float)(moveSpeed + 0.001);
         UnityEngine.Debug.Log($"PLAYER - Current car speed: {moveSpeed}");
     }
 

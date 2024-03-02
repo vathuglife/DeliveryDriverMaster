@@ -8,9 +8,9 @@ TagManager:
   - Customer
   - SpeedUp
   - GameplayInfo
-  - Destinations
   - SpawnPoints
   - Bridge
+  - Destination
   layers:
   - Default
   - TransparentFX

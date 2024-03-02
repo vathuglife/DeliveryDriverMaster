@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class Package:MonoBehaviour
+    public class PackageToDeliver:MonoBehaviour
     {
-        private GameObject packageDeliveredCount;
+        private GameObject packageCollectedCount;
         void Start()
         {
-            FindPackageDeliveredCountObject();
+            FindPackageCollectedCountObject();
         }
         void OnCollisionEnter2D(Collision2D collision)
         {
@@ -29,11 +29,11 @@ namespace Assets.Scripts
         void HandleCollisionWithCar()
         {            
             this.gameObject.SetActive(false);
-            IncrementPackageDeliveredCount();
+            IncrementPackageCollectedCount();
         }
-        void IncrementPackageDeliveredCount()
+        void IncrementPackageCollectedCount()
         {
-            TextMeshProUGUI countTxt = packageDeliveredCount.gameObject.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI countTxt = packageCollectedCount.gameObject.GetComponent<TextMeshProUGUI>();
             countTxt.text = GetIncrementedCount(countTxt.text);            
         }
         string GetIncrementedCount(string count)
@@ -42,9 +42,9 @@ namespace Assets.Scripts
             temp++;
             return temp.ToString();
         }
-        void FindPackageDeliveredCountObject()
+        void FindPackageCollectedCountObject()
         {
-            packageDeliveredCount = GameObject.Find("Packages Delivered Count");
+            packageCollectedCount = GameObject.Find("Packages Collected Count");
         }
 
     }
